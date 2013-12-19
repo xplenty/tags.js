@@ -12,10 +12,10 @@
         KEY_DELETE = 46;
 
     // jQueryUI Dependencies: Fried Eggs
-    $.widget('ui.plenty_input', $.ui.fried_eggs, {
-        widgetEventPrefix: "plenty_input_",
+    $.widget('ui.input', $.ui.fried_eggs, {
+        widgetEventPrefix: "input_",
         options: {
-            className: "plenty-input"
+            className: "input"
         },
         _create: function(){
             this._super();

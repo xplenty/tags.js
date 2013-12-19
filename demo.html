@@ -17,13 +17,13 @@
     <!-- Widget: Fried-Eggs -->
     <script src="src/widgets/fried-eggs/src/fried-eggs.js"></script>
 
-    <!-- Widget: Plenty-Input -->
-    <script src="src/widgets/plenty-input/src/plenty-input.js"></script>
-    <link rel="stylesheet" href="src/widgets/plenty-input/style/plenty-input.css"/>
+    <!-- Widget: Input -->
+    <script src="src/widgets/input/src/input.js"></script>
+    <link rel="stylesheet" href="src/widgets/input/style/input.css"/>
 
-    <!-- Widget: Plenty-Tags -->
-    <script src="src/widgets/plenty-tags/src/plenty-tags.js"></script>
-    <link rel="stylesheet" href="src/widgets/plenty-tags/style/plenty-tags.css"/>
+    <!-- Widget: Tags -->
+    <script src="src/widgets/tags/src/tags.js"></script>
+    <link rel="stylesheet" href="src/widgets/tags/style/tags.css"/>
 </head>
 <body>
     <div id="stage">
@@ -55,11 +55,11 @@
         ];
 
         (function($){
-            $('#tags').plenty_tags({
+            $('#tags').tags({
                 tags: _.clone(tags),
                 source: _.clone(tags)
-            }).on('plenty_tags_remove', function(e, tag){
-                $('#tags').plenty_tags('removeTag', tag);
+            }).on('tags_remove', function(e, tag){
+                $('#tags').tags('removeTag', tag);
             })
 
         })(jQuery);

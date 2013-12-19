@@ -6,10 +6,10 @@
         KEY_TAB = 9;
 
     // jQueryUI Dependencies: Fried Eggs
-    $.widget('ui.plenty_tags', $.ui.fried_eggs, {
-        widgetEventPrefix: "plenty_tags_",
+    $.widget('ui.tags', $.ui.fried_eggs, {
+        widgetEventPrefix: "tags_",
         options: {
-            className: "plenty-tags"
+            className: "tags"
         },
         _create: function(){
             this._super();
@@ -28,7 +28,7 @@
                 whileDragProperty = tagDragStartStream.map(true).merge(tagDragStopStream.map(false)).toProperty(false),
                 doubleClickStream = this.createEventStream('dblclick'),
                 tagDroppedStream = this.createEventStream('drop li').map(widgetEvents),
-                inputTagStream = this.createEventStream('plenty_input_set').map(widgetEvents),
+                inputTagStream = this.createEventStream('input_set').map(widgetEvents),
                 removeButtonStream = this.createEventStream('click li i'),
                 clickStream = this.createEventStream('click').doAction('.stopPropagation'),
                 clickWindowStream = this.createEventStream(this.window, 'click'),
@@ -179,7 +179,7 @@
         },
         _appendInputField: function(){
             var _this = this;
-            _this.element.find('ol').append($('<li/>').append($('<div/>').plenty_input({
+            _this.element.find('ol').append($('<li/>').append($('<div/>').input({
                 source: _this.options["source"]
             })));
         },
