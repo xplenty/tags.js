@@ -180,7 +180,8 @@
         _appendInputField: function(){
             var _this = this;
             _this.element.find('ol').append($('<li/>').append($('<div/>').input({
-                source: _this.options["source"]
+                source: _this.options["source"],
+                anchorSuggestionsTo: _this.element
             })));
         },
         _pushBefore: function(tag, beforeTag){

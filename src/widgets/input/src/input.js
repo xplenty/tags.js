@@ -15,7 +15,8 @@
     $.widget('ui.input', $.ui.fried_eggs, {
         widgetEventPrefix: "input_",
         options: {
-            className: "input"
+            className: "input",
+            anchorSuggestionsTo: null
         },
         _create: function(){
             this._super();
@@ -32,15 +33,15 @@
                 listButtonStream = this.createEventStream('click button').doAction('.stopPropagation'),
                 keydownStream = this.createEventStream('keydown input'),
                 keyupStream = this.createEventStream('keyup input'),
-                hoverLIStream = this.createEventStream('mouseenter li'),
-                clickLIStream = this.createEventStream('click li'),
+                hoverLIStream = this.createEventStream(this.suggestionsBox, 'mouseenter li'),
+                clickLIStream = this.createEventStream(this.suggestionsBox, 'click li'),
                 windowClickStream = this.createEventStream(this.window, 'click'),
                 elementClickStream = this.createEventStream('click');
 
             elementClickStream.doAction('.stopPropagation');
 
             hoverLIStream.onValue(function(e){
-                _this.element
+                _this.suggestionsBox
                     .find('li')
                     .removeClass('active');
                 $(e.target).toggleClass('active');
@@ -63,8 +64,7 @@
 
             fieldValue.onValue(function(keyword){
                 _this._query(keyword, function(results){
-                    _this.element
-                        .find('ul')
+                    _this.suggestionsBox
                         .empty()
                         .append(
                             _(results).map(function(result, i){
@@ -87,8 +87,17 @@
             suggestionsVisibilityBus.plug(suggestionsVisibilityStream);
 
             var listOpened = suggestionsVisibilityBus.scan(false, function(a,b){ return { "toggle": !a, "close": false, "open": true }[b]; });
-            listOpened.onValue(function(){ $(_this.element.find('li').removeClass('active')[0]).addClass('active'); });
-            listOpened.assign(this.element.find('ul'), "toggle");
+            listOpened.onValue(function(){ $(_this.suggestionsBox.find('li').removeClass('active')[0]).addClass('active'); });
+
+            if(_this.suggestionsBox.hasClass('anchored')){
+                listOpened.filter(function(o){ return o; }).onValue(function(a){
+                    var ref = _this.options["anchorSuggestionsTo"],
+                        position = ref.position();
+                    _this.suggestionsBox.css({ width: ref.width(), top: position.top + ref.height() + 2, left: position.left });
+                });
+            }
+
+            listOpened.assign(this.suggestionsBox, "toggle");
 
             keydownStream
                 .filter(fieldValue.or(listOpened))
@@ -103,10 +112,10 @@
                 )
                 .filter(listOpened)
                 .onValue(function(direction){
-                    var length = _this.element.find('li').length - 1,
-                        selected =_this.element.find('li.active').index(),
+                    var length = _this.suggestionsBox.find('li').length - 1,
+                        selected =_this.suggestionsBox.find('li.active').index(),
                         next = Math.max(Math.min({ "down": selected + 1, "up": selected - 1 }[direction], length),0);
-                    $(_this.element.find('li').removeClass('active')[next]).toggleClass('active', true);
+                    $(_this.suggestionsBox.find('li').removeClass('active')[next]).toggleClass('active', true);
                 });
 
             keydownStream
@@ -115,7 +124,7 @@
                 .filter(listOpened)
                 .doAction(function(e){
                     e.preventDefault();
-                    _this.element.find('input').val(_this.element.find('ul li.active').data('tag')["caption"]);
+                    _this.element.find('input').val(_this.suggestionsBox.find('li.active').data('tag')["caption"]);
                     _this._trigger('set', null, _this.element.find('input').val());
                 })
                 .throttle(100)
@@ -137,7 +146,7 @@
                     _this.element.find('input').val('');
                     _.delay(function(){
                         suggestionsVisibilityBus.push('open');
-                    }, 10);
+                    });
                 });
 
             listButtonStream
@@ -152,7 +161,11 @@
             this.element
                 .addClass(this.options["className"])
                 .empty()
-                .html('<input type="text"/><button class="btn"><i class="glyphicon glyphicon-tag white"></i></button><ul class="dropdown-menu"></ul>');
+                .html('<input type="text"/><button class="btn"><i class="glyphicon glyphicon-tag"></i></button><ul class="suggestions dropdown-menu"></ul>');
+
+            this.suggestionsBox = this.element.find('ul');
+            this.options["anchorSuggestionsTo"] && this.suggestionsBox.addClass('anchored').insertAfter(this.options["anchorSuggestionsTo"]);
+
         },
         _query: function(keyword, callback){
             callback(
@@ -161,6 +174,10 @@
                     .filter(function(o){ return ~o["caption"].indexOf(keyword.toLowerCase()); })
                     .value()
             );
+        },
+        _destroy: function(){
+            this.suggestionsBox.remove();
+            this._super();
         }
     });
 

@@ -51,20 +51,25 @@
     }
   }
 
-  ul {
+}
 
-    overflow: auto;
+ul.suggestions {
 
-    li {
-      text-decoration: none;
-      outline: 0;
+  overflow: auto;
 
-      display: block;
-      &.active {
-        background-color: @dropdown-link-active-bg;
-        color: #fff;
-      }
-    }
+  &.anchored {
+    position: absolute;
   }
 
+  li {
+
+    text-decoration: none;
+    outline: 0;
+
+    display: block;
+    &.active {
+      background-color: @dropdown-link-active-bg;
+      color: #fff;
+    }
+  }
 }
