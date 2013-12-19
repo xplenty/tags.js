@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plenty Tags</title>
+
+    <!-- Libraries -->
+    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/jquery-ui/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="lib/underscore/underscore-min.js"></script>
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
+    <script src="lib/backbone/backbone-min.js"></script>
+    <script src="lib/bacon/Bacon.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style/main.css"/>
+
+    <!-- Widget: Fried-Eggs -->
+    <script src="src/widgets/fried-eggs/src/fried-eggs.js"></script>
+
+    <!-- Widget: Plenty-Input -->
+    <script src="src/widgets/plenty-input/src/plenty-input.js"></script>
+    <link rel="stylesheet" href="src/widgets/plenty-input/style/plenty-input.css"/>
+
+    <!-- Widget: Plenty-Tags -->
+    <script src="src/widgets/plenty-tags/src/plenty-tags.js"></script>
+    <link rel="stylesheet" href="src/widgets/plenty-tags/style/plenty-tags.css"/>
+</head>
+<body>
+    <div id="stage">
+        <div id="tags"></div>
+    </div>
+    <script>
+
+        var tags = [
+            { caption: "fiberscope" },
+            { caption: "unpermeated" },
+            { caption: "kilolumen", title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eleifend, diam at pulvinar congue, diam magna cursus quam, sed viverra mi massa in quam. Aliquam blandit metus vitae faucibus cursus. Etiam sed mauris id libero eleifend venenatis in et lectus. Nulla at porttitor ipsum. Aenean elementum, ante bibendum commodo pretium, ante felis suscipit velit, vel porttitor augue odio quis dolor. Nunc ut tortor ut elit gravida ullamcorper. Aliquam semper quam eget magna accumsan rhoncus. Nullam fermentum massa ipsum, at condimentum nisi fringilla id. Mauris sodales laoreet pellentesque. Duis eget risus tellus. Proin sit amet velit nec mi viverra accumsan sit amet porttitor dui." },
+            { caption: "dirtfarmer" },
+            { caption: "stigmatizer" },
+            { caption: "krill" },
+            { caption: "theurgical" },
+            { caption: "jadedly" },
+            { caption: "oates" },
+            { caption: "nondelineation" },
+            { caption: "morphogenetic" },
+            { caption: "poinciana" },
+            { caption: "bowline" },
+            { caption: "nong" },
+            { caption: "hedwig" },
+            { caption: "kaolinise" },
+            { caption: "lodgement" },
+            { caption: "unostensive" },
+            { caption: "malefactor" },
+            { caption: "irreparably" }
+        ];
+
+        (function($){
+            $('#tags').plenty_tags({
+                tags: _.clone(tags),
+                source: _.clone(tags)
+            }).on('plenty_tags_remove', function(e, tag){
+                $('#tags').plenty_tags('removeTag', tag);
+            })
+
+        })(jQuery);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+@import "../../../../style/libs/bootstrap/mixins";
+@import "../../../../style/libs/bootstrap/variables";
+
+@width: 150px;
+@button-width: 20px;
+@border-color: #eee;
+@text-color: #444;
+@background-color: #ddd;
+@border-radius: 2px;
+@line-height: 28px;
+
+.plenty-input {
+
+  background-color: @background-color;
+  position: relative;
+  width: @width;
+
+  display: inline-block;
+  border-radius: @border-radius;
+
+  input[type=text] {
+    line-height: @line-height;
+    color: @text-color;
+    border: none;
+    background: transparent;
+    width: @width - @button-width;
+    height: auto;
+    padding: 0 5px;
+    .box-sizing(border-box);
+    &:focus {
+      outline: none;
+    }
+  }
+
+  button {
+    background: transparent;
+    position: absolute;
+    width: @button-width;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    &:focus {
+      outline: none;
+    }
+
+    &:active {
+      .box-shadow(none);
+    }
+  }
+
+  ul {
+
+    overflow: auto;
+
+    li {
+      text-decoration: none;
+      outline: 0;
+
+      display: block;
+      &.active {
+        background-color: @dropdown-link-active-bg;
+        color: #fff;
+      }
+    }
+  }
+
+}

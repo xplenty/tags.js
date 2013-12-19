@@ -1,0 +1,104 @@
+@import "../../../../style/libs/bootstrap/mixins";
+
+@font-size: 14px;
+@container-border-color: #c3c3c3;
+@container-background-color: #f7f7f7;
+@tag-text-color: #fff;
+@tag-background-color: #3bc1e0;
+@tag-border-radius: 2px;
+@tag-selected-background-color: blue;
+
+.plenty-tags {
+
+  &:focus {
+    outline: none;
+  }
+
+  &.focus {
+    .plenty-input {
+      display: inline-block;
+    }
+    .tag.active {
+      background-color: @tag-selected-background-color;
+    }
+  }
+
+  .plenty-input {
+    display: none;
+  }
+
+  .user-select(none);
+  border: solid 1px @container-border-color;
+  background-color: @container-background-color;
+
+  > ol {
+
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      position: relative;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      padding-right: 1px;
+      //overflow: hidden;
+      vertical-align: center;
+
+      .transition(border-color 0.2s);
+
+      &.lifted {
+        .tag {
+          visibility: hidden;
+        }
+      }
+
+      padding-left: 1px;
+      border-left: solid 2px transparent;
+
+      &.append_left {
+        border-left: solid 2px purple;
+      }
+    }
+  }
+
+  // This could be replaced with bootstrap's label if needed
+  .tag {
+    cursor: pointer;
+    display: inline-block;
+    background-color: @tag-background-color;
+    color: @tag-text-color;
+    font-size: @font-size;
+    border-radius: @tag-border-radius;
+    line-height: @font-size * 2;
+    padding: 0 25px 0 5px;
+    margin: 1px;
+
+    i {
+      position: absolute;
+      font-size: @font-size - 5;
+      font-weight: nornal;
+      right: 11px;
+      top: 11px;
+      &:hover {
+        color: yellow;
+      }
+    }
+
+    &.active {
+      //background-color: @tag-selected-background-color;
+    }
+
+    &.ui-draggable-dragging {
+      border: solid 1px #fff;
+      opacity: 0.8;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+  }
+}
+
