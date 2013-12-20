@@ -21,6 +21,7 @@
             var widgetEvents = function(es){ return { e: es[0], ui:es[1] }; };
 
             var keydownStream = this.createEventStream('keydown'),
+                tagBlurStream = this.createEventStream('blur .tag'),
                 tagDragStartStream = this.createEventStream('dragstart .tag').map(widgetEvents),
                 tagDragStopStream = this.createEventStream('dragstop .tag').map(widgetEvents),
                 spotMouseMoveStream = this.createEventStream('mousemove li.ui-droppable'),
@@ -46,6 +47,8 @@
                 });
 
             keydownStream
+                .filter(function(e){ return _([KEY_LEFT,KEY_RIGHT,KEY_TAB]).include(e.which); })
+                .doAction('.preventDefault')
                 .map(function(e){
                     return (_([
                         { direction: "left", func: function(e){ return e.shiftKey && e.which === KEY_TAB } },
@@ -56,11 +59,8 @@
                         return o.func(e);
                     })||{ "direction": null })["direction"];
                 })
-                //.decode({ "38": "left", "37": "left", "39": "right", "40": "right" })
                 .filter(function(direction){ return _(["left","right"]).include(direction); })
-
                 .onValue(function(keyCode){
-
                     var currentlyActiveTag = _this.element.find('div.tag.active').parent();
                     var nextActiveTag = {
                             "left": currentlyActiveTag.prev(),
@@ -83,7 +83,8 @@
 
                     nextActiveTag
                         .find('div.tag')
-                        .toggleClass('active', true).focus();
+                        .toggleClass('active', true)
+                        .focus();
                 });
 
             clickTagStream
@@ -91,6 +92,11 @@
                     _this.element.find('div.tag').removeClass('active');
                     var tag = $(e.target).parent().addClass('active').focus().data('tag');
                     _this._trigger('focus', null, tag);
+                });
+
+            tagBlurStream.
+                onValue(function(e){
+                    $(e.target).removeClass('active');
                 });
 
             var focusProperty =

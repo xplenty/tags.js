@@ -38,6 +38,7 @@
                 windowClickStream = this.createEventStream(this.window, 'click'),
                 elementClickStream = this.createEventStream('click');
 
+
             elementClickStream.doAction('.stopPropagation');
 
             hoverLIStream.onValue(function(e){
@@ -101,7 +102,12 @@
 
             keydownStream
                 .filter(fieldValue.or(listOpened))
-                .onValue(function(e){ e.stopPropagation(); });
+                .onValue(function(e){ e.stopPropagation(); })
+
+            keydownStream
+                .filter(fieldValue.or(listOpened))
+                .filter(function(e){ _([KEY_TAB]).contains(e.which); })
+                .onValue(function(e){ e.preventDefault(); })
 
             keydownStream
                 .filter(function(e){ return e.which === KEY_DOWN; })
@@ -156,6 +162,10 @@
                         suggestionsVisibilityBus.push('close');
                     });
                 });
+
+            windowClickStream.onValue(function(){
+                suggestionsVisibilityBus.push('close');
+            });
         },
         _render: function(){
             this.element
