@@ -1,0 +1,72 @@
+.tags {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  border: solid 1px #c3c3c3;
+  background-color: #f7f7f7;
+}
+.tags:focus {
+  outline: none;
+}
+.tags.focus .input {
+  display: inline-block;
+}
+.tags.focus .tag.active {
+  background-color: #0000ff;
+}
+.tags .input {
+  display: none;
+}
+.tags > ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tags > ol > li {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  padding-right: 1px;
+  vertical-align: center;
+  -webkit-transition: border-color 0.2s;
+  transition: border-color 0.2s;
+  padding-left: 1px;
+  border-left: solid 2px transparent;
+}
+.tags > ol > li.lifted .tag {
+  visibility: hidden;
+}
+.tags > ol > li.append_left {
+  border-left: solid 2px purple;
+}
+.tags .tag {
+  cursor: pointer;
+  display: inline-block;
+  background-color: #3bc1e0;
+  color: #ffffff;
+  font-size: 14px;
+  border-radius: 2px;
+  line-height: 28px;
+  padding: 0 25px 0 5px;
+  margin: 1px;
+}
+.tags .tag i {
+  position: absolute;
+  font-size: 9px;
+  font-weight: nornal;
+  right: 11px;
+  top: 11px;
+}
+.tags .tag i:hover {
+  color: yellow;
+}
+.tags .tag.ui-draggable-dragging {
+  border: solid 1px #fff;
+  opacity: 0.8;
+}
+.tags .tag:focus {
+  outline: none;
+}

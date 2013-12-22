@@ -1,0 +1,55 @@
+.input {
+  background-color: #dddddd;
+  position: relative;
+  width: 150px;
+  display: inline-block;
+  border-radius: 2px;
+}
+.input input[type=text] {
+  line-height: 28px;
+  color: #444444;
+  border: none;
+  background: transparent;
+  width: 130px;
+  height: auto;
+  padding: 0 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.input input[type=text]:focus {
+  outline: none;
+}
+.input button {
+  background: transparent;
+  position: absolute;
+  width: 20px;
+  right: 0;
+  top: 0;
+  height: 100%;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.input button:focus {
+  outline: none;
+}
+.input button:active {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+ul.suggestions {
+  overflow: auto;
+}
+ul.suggestions.anchored {
+  position: absolute;
+}
+ul.suggestions li {
+  text-decoration: none;
+  outline: 0;
+  display: block;
+}
+ul.suggestions li.active {
+  background-color: #428bca;
+  color: #fff;
+}
