@@ -9,7 +9,8 @@
         KEY_COMMA = 188,
         KEY_LEFT = 37,
         KEY_RIGHT = 39,
-        KEY_DELETE = 46;
+        KEY_DELETE = 46,
+        KEY_BACKSPACE = 8;
 
     // jQueryUI Dependencies: Fried Eggs
     $.widget('ui.input', $.ui.fried_eggs, {
@@ -23,10 +24,6 @@
             this._render();
             this._hookEvents();
             var _this = this;
-
-            _.delay(function(){
-                _this.element.focus().find('input').focus();
-            }, 10);
         },
         _hookEvents: function(){
             var _this = this,
@@ -107,7 +104,7 @@
 
             keydownStream
                 .filter(fieldValue.or(listOpened))
-                .filter(function(e){ _([KEY_TAB]).contains(e.which); })
+                .filter(function(e){ _([KEY_TAB, KEY_DELETE, KEY_BACKSPACE]).contains(e.which); })
                 .onValue(function(e){ e.preventDefault(); })
 
             keydownStream
@@ -138,6 +135,7 @@
                 .onValue(function(){
                     suggestionsVisibilityBus.push('close');
                 });
+
 
             keydownStream
                 .filter(function(e){ return e.which === KEY_ENTER && !e.ctrlKey })
@@ -170,6 +168,12 @@
         },
         toggleSuggestionBox: function(){
             this.element.trigger('toggle_suggestion_box');
+        },
+        setFocus: function(){
+            var _this = this;
+            _.delay(function(){
+                _this.element.find('input').focus();
+            });
         },
         _render: function(){
             this.element

@@ -1,6 +1,7 @@
 (function($, _){
 
     var KEY_DELETE = 46,
+        KEY_BACKSPACE = 8,
         KEY_RIGHT = 39,
         KEY_LEFT = 37,
         KEY_TAB = 9;
@@ -38,7 +39,6 @@
                 tagMouseEnterStream = this.createEventStream('mouseenter div.tag'),
                 tagMouseLeaveStream = this.createEventStream('mouseleave div.tag');
 
-
             clickSuggestionButtonStream.onValue(function(){
                 _this.element.find('.input').input('toggleSuggestionBox');
             });
@@ -52,15 +52,31 @@
                     _this._trigger(e.type === "enter" ? "over_tag" : "out_tag", null, e.tag)
                 });
 
+            removeButtonStream
+                .map(function(e){ return $(e.target).parent('div.tag').data('tag'); })
+                .merge(
+                    keydownStream
+                        .map('.which')
+                        .filter(function(code){ return _([KEY_DELETE, KEY_BACKSPACE]).contains(code); })
+                        .map(function(){ return _this.element.find('div.tag.active').data('tag'); })
+
+                )
+                .onValue(function(tag){
+                    //var tag = $(target).data('tag');
+                    _this._trigger('remove', null, tag);
+                });
+
             keydownStream
-                .filter(function(e){ return _([KEY_LEFT,KEY_RIGHT,KEY_TAB]).include(e.which); })
+                .filter(function(e){ return _([KEY_BACKSPACE, KEY_DELETE, KEY_LEFT, KEY_RIGHT, KEY_TAB]).include(e.which); })
                 .doAction('.preventDefault')
                 .map(function(e){
                     return (_([
-                        { direction: "left", func: function(e){ return e.shiftKey && e.which === KEY_TAB } },
-                        { direction: "right", func: function(e){ return !e.shiftKey && e.which === KEY_TAB } },
-                        { direction: "left", func: function(e){ return e.which === KEY_LEFT } },
-                        { direction: "right", func: function(e){ return e.which === KEY_RIGHT } }
+                        { direction: "left", func: function(e){ return e.which === KEY_BACKSPACE; } },
+                        { direction: "left", func: function(e){ return e.which === KEY_DELETE; } },
+                        { direction: "left", func: function(e){ return e.shiftKey && e.which === KEY_TAB; } },
+                        { direction: "right", func: function(e){ return !e.shiftKey && e.which === KEY_TAB; } },
+                        { direction: "left", func: function(e){ return e.which === KEY_LEFT; } },
+                        { direction: "right", func: function(e){ return e.which === KEY_RIGHT; } }
                     ]).detect(function(o){
                         return o.func(e);
                     })||{ "direction": null })["direction"];
@@ -114,7 +130,11 @@
 
             focusProperty
                 .onValue(function(displayMode){
-                    _this.element.toggleClass("focus", displayMode === "focus")
+
+                    _this.element.toggleClass("focus", displayMode === "focus");
+                    displayMode === "focus" && (function(){
+                        _this.element.find('.input').input('setFocus');
+                    })();
                 });
 
             focusProperty.onValue(function(val){
@@ -122,16 +142,6 @@
                     _this.element.focus();
                 })();
             });
-
-            removeButtonStream
-                .map(function(e){ return $(e.target).parent('div.tag').data('tag'); })
-                .merge(keydownStream.map('.which').filter(function(code){ return code === KEY_DELETE; }).map(function(){
-                    return _this.element.find('div.tag.active').data('tag');
-                }))
-                .onValue(function(tag){
-                    //var tag = $(target).data('tag');
-                    _this._trigger('remove', null, tag);
-                });
 
             inputTagStream.onValue(function(o){
                 _this.options["tags"].push({ caption: o.ui });
@@ -147,14 +157,10 @@
                 _this._onTagDropped(o["e"], o["ui"]);
             });
         },
-        toggleSuggestionBox: function(){
-
-        },
         removeTag: function(tag){
             var tagElement = _(this.element.find('div.tag').toArray()).detect(function(el){ return $(el).data('tag') === tag; });
             this.options["tags"] = _(this.options["tags"]).without(tag);
             $(tagElement).parent().remove();
-            this.element.focus();
         },
         _render: function(){
             var _this = this;
@@ -197,6 +203,8 @@
                 source: _this.options["source"],
                 anchorSuggestionsTo: _this.element
             })));
+
+            _this.element.find('.input').input('setFocus');
         },
         _pushBefore: function(tag, beforeTag){
             var tags = this.options["tags"];
