@@ -33,7 +33,7 @@
                 removeButtonStream = this.createEventStream('click li i'),
                 clickStream = this.createEventStream('click').doAction('.stopPropagation'),
                 clickWindowStream = this.createEventStream(this.window, 'click'),
-                clickTagStream = this.createEventStream('click div.tag > span'),
+                clickTagStream = this.createEventStream('click div.tag'),
                 tagMouseEnterStream = this.createEventStream('mouseenter div.tag'),
                 tagMouseLeaveStream = this.createEventStream('mouseleave div.tag');
 
@@ -90,7 +90,7 @@
             clickTagStream
                 .onValue(function(e){
                     _this.element.find('div.tag').removeClass('active');
-                    var tag = $(e.target).parent().addClass('active').focus().data('tag');
+                    var tag = (e.currentTarget === e.target ? $(e.target) :  $(e.target).parent()).addClass('active').focus().data('tag');
                     _this._trigger('focus', null, tag);
                 });
 
