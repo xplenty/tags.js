@@ -129,19 +129,18 @@
                 .doAction(function(e){
                     e.preventDefault();
                     _this.element.find('input').val(_this.suggestionsBox.find('li.active').data('tag')["caption"]);
-                    _this._trigger('set', null, _this.element.find('input').val());
+                    _this._trigger('set', null, _(_this.suggestionsBox.find('li.active').data('tag')).clone());
                 })
-                .throttle(100)
+                //.throttle(100)
                 .onValue(function(){
                     suggestionsVisibilityBus.push('close');
                 });
-
 
             keydownStream
                 .filter(function(e){ return e.which === KEY_ENTER && !e.ctrlKey })
                 .filter(listOpened.not().and(fieldValue))
                 .onValue(function(){
-                    _this._trigger('set', null, _this.element.find('input').val());
+                    _this._trigger('set', null, { caption: _this.element.find('input').val() });
                 });
 
             listButtonStream

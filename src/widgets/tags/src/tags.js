@@ -62,7 +62,6 @@
 
                 )
                 .onValue(function(tag){
-                    //var tag = $(target).data('tag');
                     _this._trigger('remove', null, tag);
                 });
 
@@ -93,7 +92,6 @@
                         "left": _this.element.find('div.tag:last').parent()[0],
                         "right": _this.element.find('div.tag:first').parent()[0]
                     }[keyCode]);
-
 
                     _this.element
                         .find('div.tag')
@@ -130,7 +128,6 @@
 
             focusProperty
                 .onValue(function(displayMode){
-
                     _this.element.toggleClass("focus", displayMode === "focus");
                     displayMode === "focus" && (function(){
                         _this.element.find('.input').input('setFocus');
@@ -144,8 +141,8 @@
             });
 
             inputTagStream.onValue(function(o){
-                _this.options["tags"].push({ caption: o.ui });
-                _this._render();
+                _this.element.find('ol').append(_this.renderTag(o["ui"]));
+                _this._appendInputField();
             });
 
             // Hide dragged tag
@@ -157,9 +154,30 @@
                 _this._onTagDropped(o["e"], o["ui"]);
             });
         },
+        renderTag: function(tag){
+            var _this = this;
+            return $('<li/>')
+                .append(
+                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove"/></div>')
+                        .prop('title', tag["title"])
+                        .data({ tag: tag })
+                        .find('span')
+                        .text(tag["caption"])
+                        .end()
+                        .draggable({
+                            helper: "clone",
+                            appendTo: _this.element,
+                            distance: 5
+                        })
+                )
+                .droppable({
+                    tolerance: "intersect",
+                    accept: ".tag",
+                    hoverClass: "append_left"
+                });
+        },
         removeTag: function(tag){
             var tagElement = _(this.element.find('div.tag').toArray()).detect(function(el){ return $(el).data('tag') === tag; });
-            this.options["tags"] = _(this.options["tags"]).without(tag);
             $(tagElement).parent().remove();
         },
         _render: function(){
@@ -171,34 +189,17 @@
                 .append($('<div><i class="glyphicon glyphicon-tag"></i></div>').addClass('utility_tray'))
                 .find('ol')
                 .empty()
-                .append(_(this.options["tags"])
-                    .sortBy(function(tag){ return tag["order"]; })
-                    .map(function(tag, index){
-                        return $('<li><div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove"/></div></li>')
-                            .find('div')
-                            .find('span')
-                            .text(tag["caption"])
-                            .end()
-                            .draggable({
-                                helper: "clone",
-                                appendTo: _this.element,
-                                distance: 5
-                            })
-                            .prop('title', tag["title"])
-                            .data({ tag: tag })
-                            .end()
-                            .droppable({
-                                tolerance: "intersect",
-                                accept: ".tag",
-                                hoverClass: "append_left"
-                            })
-                            .data({ tag: tag });
-                    }));
+                .append(
+                    _(this.options["tags"])
+                        .sortBy(function(tag){ return tag["order"]; })
+                        .map(_.bind(_this.renderTag, this))
+                );
 
             this._appendInputField();
         },
         _appendInputField: function(){
             var _this = this;
+            _this.element.find('div.input').parent().remove();
             _this.element.find('ol').append($('<li/>').append($('<div/>').input({
                 source: _this.options["source"],
                 anchorSuggestionsTo: _this.element
@@ -206,14 +207,8 @@
 
             _this.element.find('.input').input('setFocus');
         },
-        _pushBefore: function(tag, beforeTag){
-            var tags = this.options["tags"];
-            this.options["tags"] = _(tags).chain().without(tag).splice(_(tags).indexOf(beforeTag), 0, tag).value();
-        },
         _onTagDropped: function(e, ui){
-            var _this = this;
-            this._pushBefore(ui.draggable.data('tag'), $(e.target).data('tag'));
-            _.delay(function(){ _this._render(); });
+            ui.draggable.parent().insertBefore(e.target)
         }
     });
 
