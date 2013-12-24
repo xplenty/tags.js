@@ -6,9 +6,24 @@
 @tag-text-color: #fff;
 @tag-background-color: #3bc1e0;
 @tag-border-radius: 2px;
-@tag-selected-background-color: blue;
+@tag-selected-background-color: darken(@tag-background-color, 15%);
+@tag-delete-hover-color: darken(@tag-background-color, 50%);
 
 .tags {
+
+  position: relative;
+  padding: 0 30px 0 0;
+
+  .utility_tray {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background-color: @container-border-color;
+    width: 25px;
+    right: 0;
+    padding-top: 5px;
+    text-align: center;
+  }
 
   &:focus {
     outline: none;
@@ -82,7 +97,7 @@
       right: 11px;
       top: 11px;
       &:hover {
-        color: yellow;
+        color: @tag-delete-hover-color;
       }
     }
 

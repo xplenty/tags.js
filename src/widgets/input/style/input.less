@@ -5,7 +5,7 @@
 @button-width: 20px;
 @border-color: #eee;
 @text-color: #444;
-@background-color: #ddd;
+@background-color: transparent;
 @border-radius: 2px;
 @line-height: 28px;
 
@@ -14,7 +14,6 @@
   background-color: @background-color;
   position: relative;
   width: @width;
-
   display: inline-block;
   border-radius: @border-radius;
 
@@ -32,7 +31,7 @@
     }
   }
 
-  button {
+  /*button {
     background: transparent;
     position: absolute;
     width: @button-width;
@@ -49,7 +48,7 @@
     &:active {
       .box-shadow(none);
     }
-  }
+  }*/
 
 }
 
@@ -62,10 +61,8 @@ ul.suggestions {
   }
 
   li {
-
     text-decoration: none;
     outline: 0;
-
     display: block;
     &.active {
       background-color: @dropdown-link-active-bg;

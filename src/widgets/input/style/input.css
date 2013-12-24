@@ -1,9 +1,28 @@
 .input {
-  background-color: #dddddd;
+  background-color: transparent;
   position: relative;
   width: 150px;
   display: inline-block;
   border-radius: 2px;
+  /*button {
+    background: transparent;
+    position: absolute;
+    width: @button-width;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    &:focus {
+      outline: none;
+    }
+
+    &:active {
+      .box-shadow(none);
+    }
+  }*/
+
 }
 .input input[type=text] {
   line-height: 28px;
@@ -19,24 +38,6 @@
 }
 .input input[type=text]:focus {
   outline: none;
-}
-.input button {
-  background: transparent;
-  position: absolute;
-  width: 20px;
-  right: 0;
-  top: 0;
-  height: 100%;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-.input button:focus {
-  outline: none;
-}
-.input button:active {
-  -webkit-box-shadow: none;
-  box-shadow: none;
 }
 ul.suggestions {
   overflow: auto;

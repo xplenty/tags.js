@@ -36,8 +36,8 @@
                 hoverLIStream = this.createEventStream(this.suggestionsBox, 'mouseenter li'),
                 clickLIStream = this.createEventStream(this.suggestionsBox, 'click li'),
                 windowClickStream = this.createEventStream(this.window, 'click'),
-                elementClickStream = this.createEventStream('click');
-
+                elementClickStream = this.createEventStream('click'),
+                externalSuggestionToggleStream = this.createEventStream('toggle_suggestion_box');
 
             elementClickStream.doAction('.stopPropagation');
 
@@ -81,6 +81,7 @@
             var suggestionsVisibilityStream = keydownStream
                 .filter(function(e){ return e.which === KEY_ENTER && e.ctrlKey; })
                 .map('toggle')
+                .merge(externalSuggestionToggleStream.map('toggle'))
                 .merge(suggestionsStream.map(function(v){ return v.length > 0 ? "open" : "close"; }))
                 .merge(keydownStream.filter(function(e){ return e.which === KEY_ESCAPE; }).map('close'))
 
@@ -167,11 +168,14 @@
                 suggestionsVisibilityBus.push('close');
             });
         },
+        toggleSuggestionBox: function(){
+            this.element.trigger('toggle_suggestion_box');
+        },
         _render: function(){
             this.element
                 .addClass(this.options["className"])
                 .empty()
-                .html('<input type="text"/><button class="btn"><i class="glyphicon glyphicon-tag"></i></button><ul class="suggestions dropdown-menu"></ul>');
+                .html('<input type="text"/><ul class="suggestions dropdown-menu"></ul>');
 
             this.suggestionsBox = this.element.find('ul');
             this.options["anchorSuggestionsTo"] && this.suggestionsBox.addClass('anchored').insertAfter(this.options["anchorSuggestionsTo"]);

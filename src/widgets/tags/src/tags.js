@@ -34,8 +34,14 @@
                 clickStream = this.createEventStream('click').doAction('.stopPropagation'),
                 clickWindowStream = this.createEventStream(this.window, 'click'),
                 clickTagStream = this.createEventStream('click div.tag'),
+                clickSuggestionButtonStream = this.createEventStream('click div.utility_tray'),
                 tagMouseEnterStream = this.createEventStream('mouseenter div.tag'),
                 tagMouseLeaveStream = this.createEventStream('mouseleave div.tag');
+
+
+            clickSuggestionButtonStream.onValue(function(){
+                _this.element.find('.input').input('toggleSuggestionBox');
+            });
 
             tagMouseEnterStream
                 .merge(tagMouseLeaveStream)
@@ -141,13 +147,14 @@
                 _this._onTagDropped(o["e"], o["ui"]);
             });
         },
+        toggleSuggestionBox: function(){
+
+        },
         removeTag: function(tag){
             var tagElement = _(this.element.find('div.tag').toArray()).detect(function(el){ return $(el).data('tag') === tag; });
             this.options["tags"] = _(this.options["tags"]).without(tag);
             $(tagElement).parent().remove();
             this.element.focus();
-
-            //this._render();
         },
         _render: function(){
             var _this = this;
@@ -155,6 +162,7 @@
                 .prop('tabindex', 0)
                 .addClass(this.options["className"])
                 .html('<ol></ol>')
+                .append($('<div><i class="glyphicon glyphicon-tag"></i></div>').addClass('utility_tray'))
                 .find('ol')
                 .empty()
                 .append(_(this.options["tags"])
