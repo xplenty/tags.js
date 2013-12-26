@@ -47,7 +47,6 @@
 
             var fieldValue =
                 keyupStream
-                    .merge(keyupStream)
                     .map(function(e){ return _this.element.find('input').val(); })
                     .toProperty("")
                     .skipDuplicates();
