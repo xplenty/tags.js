@@ -10,7 +10,10 @@
     $.widget('ui.tags', $.ui.fried_eggs, {
         widgetEventPrefix: "tags_",
         options: {
-            className: "tags"
+            className: "tags",
+            reduceSuggestions: true,
+            allowDuplicates: true,
+            allowNew: true
         },
         _create: function(){
             this._super();
@@ -141,6 +144,23 @@
             });
 
             inputTagStream.onValue(function(o){
+
+                var existingTag = _(_this.getSelectedTags())
+                    .findWhere({ caption: o["ui"]["caption"] });
+
+                if(existingTag && !_this["options"]["allowDuplicates"]){
+                    return;
+                }
+
+                var sourceTag = _(_this.options["source"])
+                    .findWhere({ caption: o["ui"]["caption"] });
+
+                if(!sourceTag && !_this["options"]["allowNew"]){
+                    return;
+                }
+
+                var isInList = _(_this.getSelectedTags()).chain().pluck("caption").contains(o["ui"]["caption"]).value();
+
                 _this.element.find('ol').append(_this.renderTag(o["ui"]));
                 _this._appendInputField();
             });
@@ -152,6 +172,15 @@
 
             tagDroppedStream.onValue(function(o){
                 _this._onTagDropped(o["e"], o["ui"]);
+            });
+        },
+        getSelectedTags: function(){
+            var _this = this;
+            return _(
+                _this.element
+                    .find('div.tag')
+                    .toArray())
+                .map(function(tagElement){ return $(tagElement).data('tag');
             });
         },
         renderTag: function(tag){
@@ -201,6 +230,25 @@
             var _this = this;
             _this.element.find('div.input').parent().remove();
             _this.element.find('ol').append($('<li/>').append($('<div/>').input({
+                query: function(keyword, callback){
+
+                    var allSelectedTags = _this.getSelectedTags();
+
+                    var searchPool =
+                        _(_this.options["source"])
+                            .filter(function(searchObject){
+                                return !_(allSelectedTags)
+                                    .chain()
+                                    .pluck('caption')
+                                    .contains(searchObject["caption"])
+                                    .value();
+                            });
+
+                    callback(_(_this.options["reduceSuggestions"] ? searchPool : _this.options["source"])
+                        .chain()
+                        .filter(function(o){ return ~o["caption"].indexOf(keyword.toLowerCase()); })
+                        .value());
+                },
                 source: _this.options["source"],
                 anchorSuggestionsTo: _this.element
             })));

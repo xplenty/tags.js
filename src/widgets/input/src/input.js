@@ -60,6 +60,8 @@
                     }) : Bacon.once([]);
                 });
 
+            //var suggestions = suggestionsStream.toProperty([];)
+
             fieldValue.onValue(function(keyword){
                 _this._query(keyword, function(results){
                     _this.suggestionsBox
@@ -128,10 +130,9 @@
                 .filter(listOpened)
                 .doAction(function(e){
                     e.preventDefault();
-                    _this.element.find('input').val(_this.suggestionsBox.find('li.active').data('tag')["caption"]);
+                    _this.element.find('input').val((_this.suggestionsBox.find('li.active').data('tag')||{ "caption": "" })["caption"]);
                     _this._trigger('set', null, _(_this.suggestionsBox.find('li.active').data('tag')).clone());
                 })
-                //.throttle(100)
                 .onValue(function(){
                     suggestionsVisibilityBus.push('close');
                 });
@@ -185,12 +186,15 @@
 
         },
         _query: function(keyword, callback){
-            callback(
-                _(this.options["source"])
-                    .chain()
-                    .filter(function(o){ return ~o["caption"].indexOf(keyword.toLowerCase()); })
-                    .value()
-            );
+            var _this = this;
+            (this.options["query"] || function(){
+                callback(
+                    _(_this.options["source"])
+                        .chain()
+                        .filter(function(o){ return ~o["caption"].indexOf(keyword.toLowerCase()); })
+                        .value()
+                )
+            })(keyword, callback);
         },
         _destroy: function(){
             this.suggestionsBox.remove();

@@ -10,8 +10,11 @@ Usage:
 ```
 $('#demo').tags({
   $('#tags').tags({
-    tags: _.clone(tags),
-    source: _.clone(tags)
+    tags: [],
+    source: [],
+    reduceSuggestions: true,    // Reduce suggestions to available tags only
+    allowDuplicates: true,      // Allow duplications of tags
+    allowNew: false             // Allow creation of new tags
   }).on('tags_remove', function(e, tag){
     $('#tags').tags('removeTag', tag);
   });
