@@ -51,18 +51,18 @@
                     .toProperty("")
                     .skipDuplicates();
 
-            var suggestionsStream = fieldValue
-                .changes()
-                .flatMapLatest(function(v){
-                    return v.length > 0 ? Bacon.fromCallback(function(cb){
-                        _this._query(v, cb);
-                    }) : Bacon.once([]);
-                });
+           var suggestionsValue =
+                fieldValue.changes().merge(externalSuggestionToggleStream.map('')).toProperty('')
+                    .flatMapLatest(function(keyword){
+                       return Bacon.fromCallback(function(cb){
+                           _.delay(function(){
+                               _this._query(keyword, cb);
+                           });
+                       })
+                    })
+                    .toProperty([]);
 
-            //var suggestions = suggestionsStream.toProperty([];)
-
-            fieldValue.onValue(function(keyword){
-                _this._query(keyword, function(results){
+            suggestionsValue.onValue(function(results){
                     _this.suggestionsBox
                         .empty()
                         .append(
@@ -73,21 +73,25 @@
                                     .text((result["caption"]))
                             })
                         )
-                });
             });
 
             var suggestionsVisibilityStream = keydownStream
                 .filter(function(e){ return e.which === KEY_ENTER && e.ctrlKey; })
                 .map('toggle')
                 .merge(externalSuggestionToggleStream.map('toggle'))
-                .merge(suggestionsStream.map(function(v){ return v.length > 0 ? "open" : "close"; }))
+                .merge(suggestionsValue.filter(function(v){ return v.length > 0; }).filter(fieldValue).map('open'))
                 .merge(keydownStream.filter(function(e){ return e.which === KEY_ESCAPE; }).map('close'))
+                .merge(fieldValue.not().map('close'));
 
             var suggestionsVisibilityBus = new Bacon.Bus();
             suggestionsVisibilityBus.plug(suggestionsVisibilityStream);
 
             var listOpened = suggestionsVisibilityBus.scan(false, function(a,b){ return { "toggle": !a, "close": false, "open": true }[b]; });
-            listOpened.onValue(function(){ $(_this.suggestionsBox.find('li').removeClass('active')[0]).addClass('active'); });
+            listOpened.onValue(function(){
+                $(_this.suggestionsBox.find('li')
+                    .removeClass('active')[0])
+                    .addClass('active');
+            });
 
             if(_this.suggestionsBox.hasClass('anchored')){
                 listOpened.filter(function(o){ return o; }).onValue(function(a){
