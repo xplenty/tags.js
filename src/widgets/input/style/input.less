@@ -1,5 +1,19 @@
-@import "../../../../style/libs/bootstrap/mixins";
-@import "../../../../style/libs/bootstrap/variables";
+//@import "../../../../style/libs/bootstrap/mixins";
+//@import "../../../../style/libs/bootstrap/variables";
+
+.user-select(@select) {
+  -webkit-user-select: @select;
+  -moz-user-select: @select;
+  -ms-user-select: @select; // IE10+
+  -o-user-select: @select;
+  user-select: @select;
+}
+
+.box-sizing(@boxmodel) {
+  -webkit-box-sizing: @boxmodel;
+  -moz-box-sizing: @boxmodel;
+  box-sizing: @boxmodel;
+}
 
 @width: 150px;
 @button-width: 20px;
@@ -7,7 +21,7 @@
 @text-color: #444;
 @background-color: transparent;
 @border-radius: 2px;
-@line-height: 28px;
+@line-height: 30px;
 
 .input {
 
@@ -16,6 +30,7 @@
   width: @width;
   display: inline-block;
   border-radius: @border-radius;
+  box-shadow: none;
 
   input[type=text] {
     line-height: @line-height;
@@ -26,7 +41,11 @@
     height: auto;
     padding: 0 5px;
     .box-sizing(border-box);
+    box-shadow: none;
+    margin: 0;
+
     &:focus {
+      border: none;
       outline: none;
     }
   }
@@ -58,6 +77,7 @@ ul.suggestions {
 
   &.anchored {
     position: absolute;
+    z-index: 9999;
   }
 
   li {
@@ -65,7 +85,7 @@ ul.suggestions {
     outline: 0;
     display: block;
     &.active {
-      background-color: @dropdown-link-active-bg;
+      background-color: red;
       color: #fff;
     }
   }

@@ -235,12 +235,12 @@
         },
         _appendInputField: function(){
             var _this = this;
+            // Removes and destroys "li", thus destroying the widget mounted on the inner div
             _this.element.find('div.input').parent().remove();
+            // Appends a fresh "input" widget
             _this.element.find('ol').append($('<li/>').append($('<div/>').input({
                 query: function(keyword, callback){
-
                     var allSelectedTags = _this.getSelectedTags();
-
                     var searchPool =
                         _(_this.options["source"])
                             .filter(function(searchObject){
@@ -258,7 +258,11 @@
                 },
                 source: _this.options["source"],
                 anchorSuggestionsTo: _this.element
-            })));
+            })).droppable({
+                tolerance: "intersect",
+                accept: ".tag",
+                hoverClass: "append_left"
+            }));
 
             _this.element.find('.input').input('setFocus');
         },
