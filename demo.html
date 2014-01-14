@@ -60,7 +60,7 @@
                 source: _.clone(tags),
                 reduceSuggestions: true,    // Reduce suggestions to available tags only
                 allowDuplicates: true,      // Allow duplications of tags
-                allowNew: false             // Allow creation of new tags
+                allowNew: true             // Allow creation of new tags
             }).on('tags_remove', function(e, tag){
                 $('#tags').tags('removeTag', tag);
             });
