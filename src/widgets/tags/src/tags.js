@@ -1,4 +1,4 @@
-(function($, _){
+(function($, _, Bacon){
 
     var KEY_DELETE = 46,
         KEY_BACKSPACE = 8,
@@ -22,8 +22,7 @@
         },
         _hookEvents: function(){
             var _this = this;
-            var widgetEvents = function(es){ return { e: es[0], ui:es[1] }; };
-
+            var widgetEvents = function(es){ return { e: es[0], ui: es[1] }; };
             var keydownStream = this.createEventStream('keydown'),
                 tagBlurStream = this.createEventStream('blur .tag'),
                 tagDragStartStream = this.createEventStream('dragstart .tag').map(widgetEvents),
@@ -31,7 +30,7 @@
                 spotMouseMoveStream = this.createEventStream('mousemove li.ui-droppable'),
                 spotMouseOutStream = this.createEventStream('mouseout li.ui-droppable'),
                 whileDragProperty = tagDragStartStream.map(true).merge(tagDragStopStream.map(false)).toProperty(false),
-                doubleClickStream = this.createEventStream('dblclick'),
+                doubleClickStream = this.createEventStream('dblclick .tag'),
                 tagDroppedStream = this.createEventStream('drop li').map(widgetEvents),
                 inputTagStream = this.createEventStream('input_set').map(widgetEvents),
                 removeButtonStream = this.createEventStream('click li i'),
@@ -53,6 +52,14 @@
                 })
                 .onValue(function(e){
                     _this._trigger(e.type === "enter" ? "over_tag" : "out_tag", null, e.tag)
+                });
+
+            doubleClickStream
+                .map(function(e){
+                    return $(e.target).closest('.tag').data('tag');
+                })
+                .onValue(function(tag){
+                    _this._trigger('edit', null, tag);
                 });
 
             removeButtonStream
@@ -187,7 +194,7 @@
             var _this = this;
             return $('<li/>')
                 .append(
-                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove"/></div>')
+                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove white"/></div>')
                         .prop('title', tag["title"])
                         .data({ tag: tag })
                         .find('span')
@@ -260,4 +267,4 @@
         }
     });
 
-})(window.jQuery, window._);
+})(window.jQuery, window._, window.Bacon);

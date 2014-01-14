@@ -26,6 +26,7 @@
             var _this = this;
         },
         _hookEvents: function(){
+
             var _this = this,
                 listButtonStream = this.createEventStream('click button').doAction('.stopPropagation'),
                 keydownStream = this.createEventStream('keydown input'),
@@ -42,7 +43,7 @@
                 _this.suggestionsBox
                     .find('li')
                     .removeClass('active');
-                $(e.target).toggleClass('active');
+                $(e.target).closest('li').toggleClass('active');
             });
 
             var fieldValue =
@@ -70,7 +71,8 @@
                                 return $('<li/>')
                                     .data({ tag: result })
                                     .toggleClass('active', i === 0)
-                                    .text((result["caption"]))
+                                    .append($('<a href="#"/>').text(result["caption"]))
+                                    //.text((result["caption"]))
                             })
                         )
             });
@@ -79,9 +81,9 @@
                 .filter(function(e){ return e.which === KEY_ENTER && e.ctrlKey; })
                 .map('toggle')
                 .merge(externalSuggestionToggleStream.map('toggle'))
-                .merge(suggestionsValue.filter(function(v){ return v.length > 0; }).filter(fieldValue).map('open'))
+                .merge(suggestionsValue.changes().filter(function(v){ return v.length > 0; }).filter(fieldValue).map('open'))
                 .merge(keydownStream.filter(function(e){ return e.which === KEY_ESCAPE; }).map('close'))
-                .merge(fieldValue.not().map('close'));
+                .merge(fieldValue.changes().not().map('close'));
 
             var suggestionsVisibilityBus = new Bacon.Bus();
             suggestionsVisibilityBus.plug(suggestionsVisibilityStream);
@@ -105,7 +107,9 @@
 
             keydownStream
                 .filter(fieldValue.or(listOpened))
-                .onValue(function(e){ e.stopPropagation(); })
+                .onValue(function(e){
+                    e.stopPropagation();
+                })
 
             keydownStream
                 .filter(fieldValue.or(listOpened))
@@ -142,8 +146,12 @@
 
             keydownStream
                 .filter(function(e){ return e.which === KEY_ENTER && !e.ctrlKey })
-                .filter(listOpened.not().and(fieldValue))
-                .onValue(function(){
+                .filter(listOpened.not())
+                .doAction('.preventDefault')
+                .filter(fieldValue)
+                //.filter(listOpened.not().and(fieldValue))
+                .onValue(function(e){
+                    e.preventDefault();
                     _this._trigger('set', null, { caption: _this.element.find('input').val() });
                 });
 
@@ -164,6 +172,10 @@
                         suggestionsVisibilityBus.push('close');
                     });
                 });
+
+            keydownStream.filter(function(e){ return e.which === KEY_DOWN; }).filter(suggestionsValue).filter(listOpened.not()).onValue(function(){
+                suggestionsVisibilityBus.push('open');
+            });
 
             windowClickStream.onValue(function(){
                 suggestionsVisibilityBus.push('close');
