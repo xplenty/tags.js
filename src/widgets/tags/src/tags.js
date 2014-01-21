@@ -117,6 +117,26 @@
                         .focus();
                 });
 
+
+            var focusProperty =
+                clickStream
+                    .map(function(e){ return { type: "focus", tagTarget: $(e.target).closest('.tag')[0] } })
+                    .merge(clickWindowStream.map({ type: "blur", e: null }))
+                    .skipDuplicates()
+                    .toProperty('blur');
+
+            focusProperty
+                .onValue(function(obj){
+                    var displayMode = obj.type;
+                    _this.element.toggleClass("focus", displayMode === "focus");
+                    displayMode === "focus" && (function(){
+                        if(!obj.tagTarget){
+                            _this.element.focus();
+                            _this.element.find('.input').input('setFocus');
+                        }
+                    })();
+                });
+
             clickTagStream
                 .onValue(function(e){
                     _this.element.find('div.tag').removeClass('active');
@@ -128,27 +148,6 @@
                 onValue(function(e){
                     $(e.target).removeClass('active');
                 });
-
-            var focusProperty =
-                clickStream
-                    .map('focus')
-                    .merge(clickWindowStream.map('blur'))
-                    .skipDuplicates()
-                    .toProperty('blur');
-
-            focusProperty
-                .onValue(function(displayMode){
-                    _this.element.toggleClass("focus", displayMode === "focus");
-                    displayMode === "focus" && (function(){
-                        _this.element.find('.input').input('setFocus');
-                    })();
-                });
-
-            focusProperty.onValue(function(val){
-                val === "focus" && (function(){
-                    _this.element.focus();
-                })();
-            });
 
             inputTagStream.onValue(function(o){
 
@@ -194,7 +193,7 @@
             var _this = this;
             return $('<li/>')
                 .append(
-                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove white"/></div>')
+                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white"/></div>')
                         .prop('title', tag["title"])
                         .data({ tag: tag })
                         .find('span')
