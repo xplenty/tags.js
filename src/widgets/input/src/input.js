@@ -145,7 +145,7 @@
                 });
 
             keydownStream
-                .filter(function(e){ return e.which === KEY_ENTER && !e.ctrlKey })
+                .filter(function(e){ return _([KEY_COMMA, KEY_ENTER, KEY_TAB, KEY_SPACE]).include(e.which) && !e.ctrlKey })
                 .filter(listOpened.not())
                 .doAction('.preventDefault')
                 .filter(fieldValue)
