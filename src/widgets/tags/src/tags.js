@@ -193,7 +193,7 @@
             var _this = this;
             return $('<li/>')
                 .append(
-                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white"/></div>')
+                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white small"/></div>')
                         .prop('title', tag["title"])
                         .data({ tag: tag })
                         .find('span')
@@ -221,7 +221,7 @@
                 .prop('tabindex', 0)
                 .addClass(this.options["className"])
                 .html('<ol></ol>')
-                .append($('<div><i class="glyphicon glyphicon-tag"></i></div>').addClass('utility_tray'))
+                .append($('<div><i class="caret"></i></div>').addClass('utility_tray'))
                 .find('ol')
                 .empty()
                 .append(
@@ -231,6 +231,31 @@
                 );
 
             this._appendInputField();
+        },
+        refreshTag: function(tag){
+            this.refreshAllTags();
+            /*_(this.element.find('.tag').toArray()).each(function(tagEl){
+                if($(tagEl).data('tag') === tag){
+                    $(tagEl).find('span').text(tag["caption"]);
+                }
+            });*/
+        },
+        refreshAllTags: function(){
+            this.element.find('.tag').each(function(){
+                var $this = $(this);
+                var tagData = $this.data("tag");
+                var isActive = $this.hasClass("active");
+                $this
+                    .removeClass()
+                    .addClass(_(["tag", [tagData["class"]], "ui-draggable", isActive && "active"]).chain().flatten().compact().value().join(" "))
+                    .find('span')
+                    .text(tagData["caption"]);
+            });
+        },
+        getAllTags: function(){
+            return this.element.find('.tag').map(function(){
+                return $(this).data('tag');
+            }).toArray();
         },
         _appendInputField: function(){
             var _this = this;
