@@ -63,7 +63,7 @@
                 });
 
             removeButtonStream
-                .map(function(e){ return $(e.target).parent('div.tag').data('tag'); })
+                .map(function(e){ e.stopPropagation(); return $(e.target).parent('div.tag').data('tag'); })
                 .merge(
                     keydownStream
                         .map('.which')
@@ -165,10 +165,11 @@
                     return;
                 }
 
-                var isInList = _(_this.getSelectedTags()).chain().pluck("caption").contains(o["ui"]["caption"]).value();
-
                 _this.element.find('ol').append(_this.renderTag(o["ui"]));
                 _this._appendInputField();
+                _this._trigger('new', null, o["ui"]);
+                _this.refreshAllTags();
+
             });
 
             // Hide dragged tag
@@ -186,15 +187,15 @@
                 _this.element
                     .find('div.tag')
                     .toArray())
-                .map(function(tagElement){ return $(tagElement).data('tag');
+                .map(function(tagElement){ return _.extend($(tagElement).data('tag'));
             });
         },
         renderTag: function(tag){
             var _this = this;
             return $('<li/>')
                 .append(
-                    $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white small"/></div>')
-                        .prop('title', tag["title"])
+                    tag["element"] = $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white small"/></div>')
+                        .prop('title', _.result(tag, 'title'))
                         .data({ tag: tag })
                         .find('span')
                         .text(tag["caption"])
@@ -230,6 +231,7 @@
                         .map(_.bind(_this.renderTag, this))
                 );
 
+            this.refreshAllTags();
             this._appendInputField();
         },
         refreshTag: function(tag){
@@ -247,15 +249,11 @@
                 var isActive = $this.hasClass("active");
                 $this
                     .removeClass()
+                    .prop('title', _.result(tagData, 'title'))
                     .addClass(_(["tag", [tagData["class"]], "ui-draggable", isActive && "active"]).chain().flatten().compact().value().join(" "))
                     .find('span')
                     .text(tagData["caption"]);
             });
-        },
-        getAllTags: function(){
-            return this.element.find('.tag').map(function(){
-                return $(this).data('tag');
-            }).toArray();
         },
         _appendInputField: function(){
             var _this = this;
