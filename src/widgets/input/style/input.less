@@ -33,12 +33,16 @@
   box-shadow: none;
 
   input[type=text] {
+    &::-ms-clear {
+      display: none;
+    }
+
     line-height: @line-height;
     color: @text-color;
     border: none;
     background: transparent;
     width: @width - @button-width;
-    height: auto;
+    height: @line-height;
     padding: 0 5px;
     .box-sizing(border-box);
     box-shadow: none;

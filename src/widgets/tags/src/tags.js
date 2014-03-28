@@ -69,8 +69,8 @@
                         .map('.which')
                         .filter(function(code){ return _([KEY_DELETE, KEY_BACKSPACE]).contains(code); })
                         .map(function(){ return _this.element.find('div.tag.active').data('tag'); })
-
                 )
+                .filter(function(tag){ return !_.isEmpty(tag); })
                 .onValue(function(tag){
                     _this._trigger('remove', null, tag);
                 });
@@ -78,6 +78,7 @@
             keydownStream
                 .filter(function(e){ return _([KEY_BACKSPACE, KEY_DELETE, KEY_LEFT, KEY_RIGHT, KEY_TAB]).include(e.which); })
                 .doAction('.preventDefault')
+                .doAction('.stopPropagation')
                 .map(function(e){
                     return (_([
                         { direction: "left", func: function(e){ return e.which === KEY_BACKSPACE; } },
@@ -113,8 +114,14 @@
 
                     nextActiveTag
                         .find('div.tag')
-                        .toggleClass('active', true)
-                        .focus();
+                        .map(function(){
+                            _this.element.find('input').blur();
+                            $(this).addClass('active').focus();
+                            return this;
+                        })
+                        .toArray().length > 0 || (function(){
+                        _this.element.find('.input').input('setFocus');
+                    })();
                 });
 
 
@@ -127,14 +134,11 @@
 
             focusProperty
                 .onValue(function(obj){
-                    var displayMode = obj.type;
-                    _this.element.toggleClass("focus", displayMode === "focus");
-                    displayMode === "focus" && (function(){
-                        if(!obj.tagTarget){
-                            _this.element.focus();
-                            _this.element.find('.input').input('setFocus');
-                        }
-                    })();
+                    _this.element.toggleClass("focus", obj.type === "focus");
+                    if(!obj.tagTarget){
+                        _this.element.find('div.tag').removeClass('active');
+                        _this.element.focus().find('.input').input('setFocus');
+                    }
                 });
 
             clickTagStream
@@ -166,9 +170,10 @@
                 }
 
                 _this.element.find('ol').append(_this.renderTag(o["ui"]));
-                _this._appendInputField();
+
                 _this._trigger('new', null, o["ui"]);
                 _this.refreshAllTags();
+                _this._appendInputField();
 
             });
 
@@ -194,7 +199,7 @@
             var _this = this;
             return $('<li/>')
                 .append(
-                    tag["element"] = $('<div class="tag" tabindex="0"><span></span><i class="glyphicon glyphicon-remove_2 white small"/></div>')
+                    tag["element"] = $('<div class="tag" tabindex="0"><span></span><i class="glyphicons remove_2 white small"/></div>')
                         .prop('title', _.result(tag, 'title'))
                         .data({ tag: tag })
                         .find('span')
@@ -215,6 +220,7 @@
         removeTag: function(tag){
             var tagElement = _(this.element.find('div.tag').toArray()).detect(function(el){ return $(el).data('tag') === tag; });
             $(tagElement).parent().remove();
+            this.refreshAllTags();
         },
         _render: function(){
             var _this = this;
@@ -223,6 +229,7 @@
                 .addClass(this.options["className"])
                 .html('<ol></ol>')
                 .append($('<div><i class="caret"></i></div>').addClass('utility_tray'))
+                .append($('<span class="placeholder_text"/>').text(this.options["placeholder"] || "Type to add aliases"))
                 .find('ol')
                 .empty()
                 .append(
@@ -234,16 +241,8 @@
             this.refreshAllTags();
             this._appendInputField();
         },
-        refreshTag: function(tag){
-            this.refreshAllTags();
-            /*_(this.element.find('.tag').toArray()).each(function(tagEl){
-                if($(tagEl).data('tag') === tag){
-                    $(tagEl).find('span').text(tag["caption"]);
-                }
-            });*/
-        },
         refreshAllTags: function(){
-            this.element.find('.tag').each(function(){
+            this.element.toggleClass('empty', !this.element.find('.tag').map(function(){
                 var $this = $(this);
                 var tagData = $this.data("tag");
                 var isActive = $this.hasClass("active");
@@ -253,7 +252,9 @@
                     .addClass(_(["tag", [tagData["class"]], "ui-draggable", isActive && "active"]).chain().flatten().compact().value().join(" "))
                     .find('span')
                     .text(tagData["caption"]);
-            });
+
+                return true;
+            }).toArray().length);
         },
         _appendInputField: function(){
             var _this = this;
@@ -287,6 +288,7 @@
             }));
 
             _this.element.find('.input').input('setFocus');
+
         },
         _onTagDropped: function(e, ui){
             ui.draggable.parent().insertBefore(e.target)

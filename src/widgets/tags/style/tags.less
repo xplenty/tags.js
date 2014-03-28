@@ -24,32 +24,57 @@
 @container-border-color: #c3c3c3;
 @container-background-color: #f7f7f7;
 @tag-text-color: #fff;
-@tag-background-color: #3bc1e0;
-@tag-border-radius: 2px;
+@tag-background-color: #51a351;
+@tag-border-radius: 0px;
 @tag-selected-background-color: darken(@tag-background-color, 15%);
 @tag-delete-hover-color: darken(@tag-background-color, 50%);
 
 .tags {
 
   position: relative;
-  padding: 0 30px 0 0;
+  padding: 3px 30px 0 0;
   min-height: 30px;
+
+  .placeholder_text {
+    padding: 7px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+  }
+
+  &.empty {
+    .placeholder_text {
+      display: inline;
+    }
+  }
+
+  &.focus {
+    .placeholder_text {
+      display: none;
+    }
+  }
 
   .utility_tray {
     padding: 0;
     position: absolute;
     top: 0;
     height: 100%;
-    background-color: @container-border-color;
-    width: 30px;
+    // background-color: #51a351;
+    width: 32px;
     right: 0;
     text-align: center;
 
-    i {
-      position: absolute;
-      right: 7px;
-      top: 4px;
+    .caret {
+      margin-top: 13px;
+      border-top-color: #646464;
+      border-bottom-color: #646464;
     }
+    // i {
+    //   position: absolute;
+    //   right: 9px;
+    //   top: 5px;
+    // }
   }
 
   &:focus {
@@ -86,7 +111,7 @@
       padding: 0;
       padding-right: 1px;
       //overflow: hidden;
-      min-width: 50px;
+      min-width: 30px;
 
 
       height: @font-size * 2 + 2px;
@@ -125,16 +150,25 @@
     padding: 0 25px 0 5px;
     margin: 1px;
 
+    &.edited {
+      font-weight: bold;
+    }
+
     i {
 
       color: #fff;
       position: absolute;
-      font-size: @font-size - 5;
-      font-weight: nornal;
-      right: 8px;
-      top: 2px;
+      font-size: 3px;
+      font-weight: normal;
+      right: 9px;
+      top: 5px;
+      width: 10px;
 
-      &:before:hover {
+      &:before {
+        font-size: 12px;
+      }
+
+      &:hover:before {
         color: @tag-delete-hover-color;
       }
     }
