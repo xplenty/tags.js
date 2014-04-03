@@ -147,6 +147,12 @@
                 });
 
             keydownStream
+                .filter(function(e){ return (e.which === KEY_SPACE) && e.ctrlKey; })
+                .onValue(function(e){
+                    e.preventDefault();
+                });
+
+            keydownStream
                 .filter(function(e){ return _([KEY_COMMA, KEY_ENTER, KEY_TAB, KEY_SPACE]).include(e.which) && !e.ctrlKey; })
                 .merge(clickLIStream.doAction('.preventDefault'))
                 .filter(listOpened)
