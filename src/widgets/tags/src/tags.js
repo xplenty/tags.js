@@ -229,7 +229,7 @@
                 .addClass(this.options["className"])
                 .html('<ol></ol>')
                 .append($('<div><i class="caret"></i></div>').addClass('utility_tray'))
-                .append($('<span class="placeholder_text"/>').text(this.options["placeholder"] || "Type to add aliases"))
+                .append($('<span class="placeholder_text"/>').text(this.options["placeholder"] || "Tags go here"))
                 .find('ol')
                 .empty()
                 .append(
