@@ -99,7 +99,22 @@
                 listOpened.filter(function(o){ return o; }).onValue(function(a){
                     var ref = _this.options["anchorSuggestionsTo"],
                         position = ref.position();
-                    _this.suggestionsBox.css({ width: ref.width(), top: position.top + ref.height() + 2, left: position.left });
+                    _this.suggestionsBox.css({
+                        width: ref.width(),
+                        top: position.top + ref.height() + 2,
+                        left: position.left,
+                        height: "auto"
+                    });
+
+                    _.defer(function(){
+                        _([$(window).height() - (_this.suggestionsBox.offset().top + _this.suggestionsBox.outerHeight())])
+                            .chain()
+                            .map(_.partial(Math.min, 0))
+                            .each(function(heightOverflow){
+                                _this.suggestionsBox
+                                    .css({ height: !!heightOverflow ? _this.suggestionsBox.outerHeight() + heightOverflow : "auto" })
+                            });
+                    });
                 });
             }
 
